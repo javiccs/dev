@@ -1,0 +1,22 @@
+<ion-header >
+  <ion-navbar hideBackButton="true">
+    <ion-item no-lines>
+      <button  class="transparent-button" ion-button clear icon-only item-right (click)="dismiss()">
+        <ion-icon name="md-close" color="white"></ion-icon>
+      </button>
+    </ion-item>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding >
+  <div padding></div>
+  <img class="modal-icon center-element" src="assets/icon/yei-face.png" onError="">
+  <h2 class="cw-header-title cw-back-title center-text">¡YEI!</h2>
+  <div  class="center-text "><p>{{message}}</p>
+    <div padding></div>
+    <div padding>
+      <button ion-button class="btnCenter hover-button" color="cw-lg-green" (click)="continue()" round>Continuar</button>
+    </div>
+  </div>
+</ion-content>

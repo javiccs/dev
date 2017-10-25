@@ -1,0 +1,65 @@
+page-login {
+  .input-wrapper ion-label {
+    margin: 0px 0px 0px 0;
+  }
+  .cw-nav-btn{
+    color: #0D5D6F;
+    background-color: white;
+    opacity: 0.85;
+  }
+
+  .cw-fondo{
+    opacity: 0.4;
+  }
+  .footer-md::before, .tabs-md[tabsPlacement="bottom"] > .tabbar::before{
+    height:0px;
+  }
+  .header-md::after {
+    background-image: none;
+  }
+  .cw-green{
+    color:#0D5D6F!important;
+
+  }
+  .banner-store{
+    background:#005a70; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(#005a70, #54B283); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#005a70, #54B283); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#005a70, #54B283); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#005a70, #54B283); /* Standard syntax */
+    margin:0;
+  }
+  ion-header a {
+    color: #0D5D6F;
+    font-size: small!important;
+  }
+  .banner-store-get-app-col{
+    margin:auto!important;
+  }
+  .text-white{
+    color:white!important;
+    font-weight: bolder;
+  }
+  .title{
+    font-weight: bolder;
+    font-size: medium;
+    color:white!important;
+  }
+  .sub-title{
+    font-weight: normal;
+    font-size: smaller;
+    color:white!important;
+  }
+  p.border {
+    border-style: solid!important;
+    border-width: 1px!important;
+    width: 85px!important;
+    height: 35px!important;
+    padding-top: 9px!important;
+    padding-left: 7px!important;
+    border-color:white!important;
+    border-radius: 25px!important;
+  }
+
+
+}
