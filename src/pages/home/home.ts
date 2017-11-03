@@ -20,6 +20,7 @@ import {AuthCognitoProvider} from '../../providers/auth-cognito.provider';
 export class HomePage extends MainPage {
   requestURL: string;
   public items: any = [];
+  public landingPage:boolean;
   constructor(public navCtrl: NavController,
               public loadingCtrl: LoadingController,
               public menu: MenuController,
@@ -30,8 +31,9 @@ export class HomePage extends MainPage {
 
     this.awsProvider.awsInit();
     this.awsProvider.getCognitoUser(this)
-    this.presentLoading('Cargando')
+    this.presentLoading('Cargando home')
     this.loading.present()
+    this.landingPage=true;
   }
 
   ionViewDidLoad() {
@@ -71,6 +73,7 @@ export class HomePage extends MainPage {
 
   }
   getSource(item){
+    this.landingPage=false;
     this.presentLoading('Cargando')
     this.loading.present()
     this.requestURL=item.src;

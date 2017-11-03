@@ -8,16 +8,16 @@
   <ion-navbar hideBackButton="true">
     <ion-item no-lines class="center-text">
       <span padding-left class="cw-header-title">CityWallet</span>
-      <!--<img item-left (click)="doLogout()" src="assets/img/logout.png" class="logout">-->
+      <img item-left (click)="doLogout()" src="assets/img/logout.png" class="logout">
     </ion-item>
   </ion-navbar>
 </ion-header>
 
 
-<ion-content no-padding>
-  <ion-grid no-padding>
-    <ion-row>
-      <ion-col class="cw-col-left" col-2>
+<ion-content no-padding >
+  <ion-grid no-padding  >
+    <ion-row >
+      <ion-col class="cw-col-left" col-2 >
         <ion-item>
           <img src="assets/img/citywalletLogo.png" class="cw-logo-2">
         </ion-item>
@@ -26,10 +26,16 @@
 
         </ion-item>
       </ion-col>
-      <ion-col >
+      <ion-col col-10 *ngIf="landingPage">
 
-        <iframe width="100%" height="100%" [attr.src]="requestURL|safe"></iframe>
+          <ion-item  no-lines>
+            <p  class="center center-element sub-title">Bienvenido al sistema de reportes de CityWallet. Por favor escoja un reporte.</p>
 
+          </ion-item>
+
+      </ion-col>
+      <ion-col col-10 *ngIf="!landingPage">
+      <iframe width="100%" height="100%" [attr.src]="requestURL|safe"></iframe>
       </ion-col>
     </ion-row>
   </ion-grid>

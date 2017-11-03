@@ -6,8 +6,15 @@ page-home {
   .cw-col-left{
     background-color: #236F80 !important;
     min-height: -webkit-fill-available!important;
+    min-height: 724px;
+
   }
-  .text{
-    color:white!important;
+  .text {
+    color: white !important;
   }
+.sub-title{
+  color:black!important;
+  font-size: 2.0rem!important;
+  margin-top: 10px;
+}
 }
