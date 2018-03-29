@@ -62,6 +62,8 @@ export class ErrorHandler {
         507: 'El monto mínimo de recarga es Bs.F.',
         508: 'El monto máximo de recarga es Bs.F.',
         509: 'El número de tarjeta de la crédito es inválida',
+        510:'Ha ocurrido un error subiendo el archivo.Intente nuevamente',
+        511:'El formato del archivo es incorrecto, recuerda que debe ser csv',
         //ERROR
         600:'El monto supera al disponible',
         601:'La confirmación de tu llave de pago no coincide',
@@ -79,6 +81,7 @@ export class ErrorHandler {
         708: 'Los lectores no pueden procesarla mientras esté desactivada',
         709:'La petición de dinero se realizó de forma exitosa.',
         710: 'Los lectores no pueden procesarla mientras esté desactivada',
+        711:'El archivo ha sido recibido exitosamente',
         //GENERAL
         800:'Tu dispositivo no posee conexión a internet. La Transacción se realizará por SMS',
         801:'Tu transacción fue recibida, podrás ver su estatus en tu balance.',

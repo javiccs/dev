@@ -14,12 +14,15 @@
 </ion-header>
 
 
-<ion-content no-padding >
-  <ion-grid no-padding  >
-    <ion-row >
-      <ion-col class="cw-col-left" col-2 >
+<ion-content no-padding>
+  <ion-grid no-padding>
+    <ion-row>
+      <ion-col class="cw-col-left" col-2>
         <ion-item>
           <img src="assets/img/citywalletLogo.png" class="cw-logo-2">
+        </ion-item>
+        <ion-item (click)="getSource('cashIn')" class="center-text">
+          <a class="text">Recargar</a>
         </ion-item>
         <ion-item (click)="getSource(item)" class="center-text" *ngFor="let item of items ">
           <a class="text">{{item.name}}</a>
@@ -28,14 +31,40 @@
       </ion-col>
       <ion-col col-10 *ngIf="landingPage">
 
-          <ion-item  no-lines>
-            <p  class="center center-element sub-title">Bienvenido al sistema de reportes de CityWallet. Por favor escoja un reporte.</p>
-
-          </ion-item>
+        <ion-item no-lines>
+          <ion-item-group>
+            <ion-grid>
+              <ion-row padding-bottom>
+                <ion-col col-12 class="center-text sub-title">Recargas</ion-col>
+              </ion-row>
+              <ion-row padding-top>
+                <ion-col class="center-text" col-12 padding-left>Por favor selecciona el archivo a enviar, recuerde que debe estar en formato xls.</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col class="center-text" col-12 padding-left>selecciona el archivo
+                <label for="file-upload" class="custom-file-upload">
+                  <i class="fa fa-cloud-upload"></i> oprimiendo aqui
+                </label>
+                <input (change)="getFile($event)" id="file-upload" name='upload_cont_img' type="file" style="display:none;">
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col class="center-text" col-12 padding-left>{{userFileName}}.</ion-col>
+              </ion-row>
+              <ion-item padding-bottom no-lines>
+                <button ion-button class="btnCenter hover-button" ion-text="cw-lg-green"
+                        [disabled]="disabled"
+                        (click)="putFile()"
+                        round>Cargar
+                </button>
+              </ion-item>
+            </ion-grid>
+          </ion-item-group>
+        </ion-item>
 
       </ion-col>
       <ion-col col-10 *ngIf="!landingPage">
-      <iframe width="100%" height="100%" [attr.src]="requestURL|safe"></iframe>
+        <iframe width="100%" height="100%" [attr.src]="requestURL|safe"></iframe>
       </ion-col>
     </ion-row>
   </ion-grid>

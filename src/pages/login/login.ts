@@ -92,10 +92,9 @@ export class LoginPage extends MainPage{
   cognitoCallbackLogin(message: any, result: any) {
 
     if (message != null) { //error
-      this.handlerMessage('error', message, '');
+      this.handlerMessage('error', message, '',null);
     } else { //success
       this.navCtrl.push('HomePage')
-      console.log(this.navCtrl);
     }
     this.loading.dismiss();
     this.disabled = false;

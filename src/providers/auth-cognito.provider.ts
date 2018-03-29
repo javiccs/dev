@@ -4,8 +4,6 @@ import {userPoolId} from './properties.provider';
 import {clientId} from './properties.provider';
 import {region} from './properties.provider';
 import {identityPoolId} from './properties.provider';
-import {userPoolUrl} from './properties.provider';
-import {mobileAnalyticsAppId} from './properties.provider';
 import 'rxjs/add/operator/map';
 import {Http, Headers, Response, RequestOptions} from '@angular/http';
 
@@ -34,6 +32,9 @@ export class RegistrationUser {
 
 }
 
+export interface UploadFileCallback {
+  uploadFileCallback(message: string, result: any): void;
+}
 export interface CognitoCallbackLogin {
   cognitoCallbackLogin(message: string, result: any): void;
 }
@@ -407,6 +408,46 @@ export class AuthCognitoProvider {
 
 
   }
+  putTableConfig(user:string,file: any, callback: UploadFileCallback) {
+    var cognitoUser = this.userPool.getCurrentUser();
+    if (cognitoUser != null) {
+      cognitoUser.getSession(function (err, result) {
+        if (result) {
+          AWS.config.region = region; //This is required to derive the endpoint
+          // Add the User's Id Token to the Cognito credentials login map.
+          AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId,
+            Logins: {
+              'cognito-idp.us-east-1.amazonaws.com/us-east-1_T9AVy9m1P': result.getIdToken().getJwtToken()
+            }
+          });
+        }
+      });
+    }
+//call refresh method in order to authenticate user and get new temp credentials
+
+    var s3 = new AWS.S3()
+    var params = {
+      Body: file,
+      Bucket: "parkingsharedstack-cwcashindocumentsbucket-wpfrgy0wok9u",
+      ContentType: file.type,
+      ACL: 'public-read',
+      Key: user+'/'+file.name+file.lastModified
+    };
+
+    s3.putObject(params, function (err, data) {
+      if (err) {
+        callback.uploadFileCallback(err.message, null);
+      } else {
+       callback.uploadFileCallback(null, data);
+
+      }
+    });
+
+
+
+  }
+
 
 
 }

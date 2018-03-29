@@ -116,9 +116,9 @@ export class WelcomeForgotPasswordPage extends MainPage{
   cognitoCallback(message: string, result: any) {
     if (message != null) { //error
 
-     this.handlerMessage('error', message, '');
+      this.handlerMessage('error', message, '',null);;
     } else { //success;
-      this.handlerMessage( 'success', 804, 900);
+      this.handlerMessage('success', 804, 900, null);
     }
     this.disabled = false;
     this.loading.dismiss();

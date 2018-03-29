@@ -1,6 +1,5 @@
 import {FormControl} from '@angular/forms';
 import{Platform}  from 'ionic-angular';
-import {CityWalletNumber} from '../../providers/properties.provider';
 import {Network} from '@ionic-native/network';
 import {Component, ViewChild} from '@angular/core';
 @Component({
@@ -312,18 +311,6 @@ export class UtilPage {
       }
     }
 
-
-  }
-
-  public static sendSMS(window, data) {
-    window.SMS.sendSMS(CityWalletNumber, data, function (e) {
-      console.log('success sms' + e)
-      return (true)
-    }, function (e) {
-      console.log('error sms ' + e)
-      return (false)
-
-    });
 
   }
 

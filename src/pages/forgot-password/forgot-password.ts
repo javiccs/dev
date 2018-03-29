@@ -88,7 +88,7 @@ export class ForgotPasswordPage extends MainPage {
   cognitoCallback(message: string, result: any) {
     if (message != null) { //error
       this.loading.dismiss();
-      this.handlerMessage('error', message, '');
+      this.handlerMessage('success', 804, 900, null);
     } else { //success
       this.loading.dismiss();
       this.navCtrl.push('WelcomeForgotPasswordPage', {

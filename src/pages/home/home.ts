@@ -4,7 +4,7 @@ import {MainPage} from '../main/main';
 import {Injectable} from '@angular/core';
 import {Http, ResponseContentType, Response, ResponseOptions} from '@angular/http';
 import 'rxjs/add/operator/toPromise';
-import {AuthCognitoProvider} from '../../providers/auth-cognito.provider';
+import {AuthCognitoProvider, UploadFileCallback} from '../../providers/auth-cognito.provider';
 
 /**
  * Generated class for the HomePage page.
@@ -22,7 +22,10 @@ export class HomePage extends MainPage {
   requestURL: string;
   public items: any = [];
   public landingPage: boolean;
-
+  public userFileName='No se ha seleccionado ningun archivo'
+  public user:string;
+  public disabled:boolean
+  public file:any;
   constructor(public navCtrl: NavController,
               public loadingCtrl: LoadingController,
               public menu: MenuController,
@@ -36,6 +39,7 @@ export class HomePage extends MainPage {
       this.awsProvider.awsInit();
       this.awsProvider.getCognitoUser(this)
       this.landingPage = true;
+      this.disabled = true;
     } catch (e) {
       console.log('entro'+2)
     }
@@ -57,9 +61,8 @@ try{
   }
 
   cognitoCallback(message: any, result: any) {
-
     if (message != null) { //error
-      this.items = {}
+      console.log('cognitoCallback error'+message)
     } else { //success
       try {
         var decodedString = String.fromCharCode.apply(null, new Uint8Array(result.Body));
@@ -73,14 +76,60 @@ try{
     }
 
   }
+  uploadFileCallback(message: any, result: any) {
+    if (message != null) { //error
+      this.handlerMessage('error', 510 ,'',null);
+    } else { //success
+    this.userFileName='No se ha seleccionado ningun archivo'
+      this.disabled=true;
+      this.handlerMessage('success', 711, '',null);
+    }
 
-  getSource(item) {
-    this.landingPage = false;
-    this.presentLoading('Cargando')
-    this.loading.present()
-    this.requestURL = item.src;
-    this.loading.dismiss()
   }
+  getSource(item) {
+    if(item=='cashIn'){
+      this.landingPage = true;
+      this.disabled = true;
+      this.userFileName='No se ha seleccionado ningun archivo'
+
+    }else{
+      this.landingPage = false;
+      this.presentLoading('Cargando')
+      this.loading.present()
+      this.requestURL = item.src;
+      this.loading.dismiss()
+    }
+
+
+  }
+  getFile(event){
+    let fileList: FileList = event.target.files;
+    console.log(fileList)
+    if (fileList.length > 0) {
+       this.file = fileList[0];
+      let extension:any=this.file.name.split('.')
+      if(extension[1]=='xls'||extension[1]=='xlsx'){
+        this.userFileName=this.file.name;
+        this.disabled = false;
+      }
+      else{
+        this.file='';
+        this.userFileName='No se ha seleccionado ningun archivo'
+        this.disabled = true;
+        this.handlerMessage('error', 511 ,'',null);
+      }
+
+    }
+    else{
+      console.log('else')
+    }
+  }
+  putFile(){
+    let fileName=this.user[0]+'-'+this.file.lastModified+'.'+this.file.name.split('.')[1];
+    console.log(fileName)
+    this.awsProvider.putTableConfig(this.user[0],this.file, this)
+  }
+
 
   getUserCallback(message: any, result: any) {
     let email: any;
@@ -93,8 +142,8 @@ try{
             email = result[i].Value;
           }
         }
-        let user = email.split("@");
-        this.awsProvider.getTableConfig(user[0], this)
+        this.user = email.split("@");
+        //this.awsProvider.getTableConfig(this.user[0], this)
       } catch (e) {
         console.log(e)
       }

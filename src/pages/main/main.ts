@@ -24,15 +24,53 @@ export class MainPage {
               public menu: MenuController,
               public alertCtrl: AlertController) {}
 
-  handlerMessage(type: string, messageCode: any, metadata: any) {
+  handlerMessage(type: string, messageCode: any, metadata: any, reedemCode) {
     try {
-      let code = {code: messageCode, metadata: metadata};
-      if (type == 'error')
-        this.navCtrl.push('ErrorPage', code)
-      else if (type == 'success')
-        this.navCtrl.push('SuccessPage', code)
+      let buttons: any = [{
+        text: 'ACEPTAR', handler: () => {
+        }
+      }]
+      if (metadata == '900') {
+        buttons = [{
+          text: 'ACEPTAR', handler: () => {
+            this.navCtrl.setRoot('LoginPage');
+          }
+        }]
+      }
+      else if (metadata == '901') {
+        buttons = [{
+          text: 'ACEPTAR', handler: () => {
+            this.navCtrl.setRoot('DashboardPage');
+          }
+        }]
+      }
+      if (type == 'error') {
+        if (messageCode == 'User is not confirmed.') {
+          buttons = [
+            {
+              text: 'Cancelar',
+              role: 'cancel'
+            }, {
+              text: 'CONFIGURAR', handler: () => {
+                this.navCtrl.push('CreateAccountResendPage');
+              }
+            }]
+        }
+
+        this.alertMessage('ERROR', this.handleErrorMessage(messageCode), buttons)
+
+      }
+      else if (type == 'success') {
+        if (reedemCode == null)
+          this.alertMessage('ÉXITO', this.handleErrorMessage(messageCode), buttons)
+        else
+          this.alertMessage('ÉXITO', this.handleErrorMessage(messageCode) + " " + reedemCode, buttons)
+      } else
+      //this.navCtrl.push('GeneralMessagePage', code)
+      if (reedemCode == null)
+        this.alertMessage('IMPORTANTE', this.handleErrorMessage(messageCode), buttons)
       else
-        this.navCtrl.push('GeneralMessagePage', code)
+        this.alertMessage('IMPORTANTE', this.handleErrorMessage(messageCode) + " " + reedemCode, buttons)
     } catch (e) {
       console.log("catch  main-page handlerMessage" + e)
     }
@@ -44,7 +82,14 @@ export class MainPage {
       console.log("catch  main-page handlerMessage" + e)
     }
   }
-
+  alertMessage(title, subTitle, buttons) {
+    let alert = this.alertCtrl.create({
+      title: title,
+      subTitle: subTitle,
+      buttons: buttons
+    });
+    alert.present();
+  }
 
   presentLoading(mensaje) {
     this.loading = this.loadingCtrl.create({
