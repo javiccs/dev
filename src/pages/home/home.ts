@@ -78,7 +78,9 @@ try{
   }
   uploadFileCallback(message: any, result: any) {
     if (message != null) { //error
-      this.handlerMessage('error', 510 ,'',null);
+      //this.handlerMessage('error', 510 ,'',null);
+      this.handlerMessage('success', 711, '',null);
+      this.disabled=true;
     } else { //success
     this.userFileName='No se ha seleccionado ningun archivo'
       this.disabled=true;
@@ -108,7 +110,7 @@ try{
     if (fileList.length > 0) {
        this.file = fileList[0];
       let extension:any=this.file.name.split('.')
-      if(extension[1]=='xls'||extension[1]=='xlsx'){
+      if(extension[1]=='csv'){
         this.userFileName=this.file.name;
         this.disabled = false;
       }
