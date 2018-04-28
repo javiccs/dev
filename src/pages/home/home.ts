@@ -22,10 +22,11 @@ export class HomePage extends MainPage {
   requestURL: string;
   public items: any = [];
   public landingPage: boolean;
-  public userFileName='No se ha seleccionado ningun archivo'
-  public user:string;
-  public disabled:boolean
-  public file:any;
+  public userFileName = 'No se ha seleccionado ningun archivo'
+  public user: string;
+  public disabled: boolean
+  public file: any;
+
   constructor(public navCtrl: NavController,
               public loadingCtrl: LoadingController,
               public menu: MenuController,
@@ -35,24 +36,23 @@ export class HomePage extends MainPage {
 
     super(navCtrl, loadingCtrl, menu, alertCtrl);
     try {
-      console.log('entro a constructor')
       this.awsProvider.awsInit();
       this.awsProvider.getCognitoUser(this)
       this.landingPage = true;
       this.disabled = true;
     } catch (e) {
-      console.log('entro'+2)
+      console.log('entro' + 2)
     }
   }
 
 
   doLogout() {
-try{
-  this.navCtrl.setRoot('LoginPage')
-  this.awsProvider.logout(this);
-}catch(e){
-  console.log(e)
-}
+    try {
+      this.navCtrl.setRoot('LoginPage')
+      this.awsProvider.logout(this);
+    } catch (e) {
+      console.log(e)
+    }
 
   }
 
@@ -62,7 +62,7 @@ try{
 
   cognitoCallback(message: any, result: any) {
     if (message != null) { //error
-      console.log('cognitoCallback error'+message)
+      console.log('cognitoCallback error' + message)
     } else { //success
       try {
         var decodedString = String.fromCharCode.apply(null, new Uint8Array(result.Body));
@@ -76,25 +76,28 @@ try{
     }
 
   }
-  uploadFileCallback(message: any, result: any) {
+
+  postCashinFileCallback(message: any, result: any) {
     if (message != null) { //error
       //this.handlerMessage('error', 510 ,'',null);
-      this.handlerMessage('success', 711, '',null);
-      this.disabled=true;
+      this.handlerMessage('error', message.data.code, '.Linea '+message.data.line, null);
+      this.disabled = true;
     } else { //success
-    this.userFileName='No se ha seleccionado ningun archivo'
-      this.disabled=true;
-      this.handlerMessage('success', 711, '',null);
+      this.userFileName = 'No se ha seleccionado ningun archivo'
+      this.disabled = true;
+      this.file=''
+      this.handlerMessage('success', 711, '', null);
     }
 
   }
+
   getSource(item) {
-    if(item=='cashIn'){
+    if (item == 'cashIn') {
       this.landingPage = true;
       this.disabled = true;
-      this.userFileName='No se ha seleccionado ningun archivo'
+      this.userFileName = 'No se ha seleccionado ningun archivo'
 
-    }else{
+    } else {
       this.landingPage = false;
       this.presentLoading('Cargando')
       this.loading.present()
@@ -104,32 +107,34 @@ try{
 
 
   }
-  getFile(event){
+
+  getFile(event) {
     let fileList: FileList = event.target.files;
-    console.log(fileList)
+
     if (fileList.length > 0) {
-       this.file = fileList[0];
-      let extension:any=this.file.name.split('.')
-      if(extension[1]=='csv'){
-        this.userFileName=this.file.name;
+      this.file = fileList[0];
+      let extension: any = this.file.name.split('.')
+      if (extension[1] == 'csv') {
+        this.userFileName = this.file.name;
         this.disabled = false;
       }
-      else{
-        this.file='';
-        this.userFileName='No se ha seleccionado ningun archivo'
+      else {
+        this.file = '';
+        this.userFileName = 'No se ha seleccionado ningun archivo'
         this.disabled = true;
-        this.handlerMessage('error', 511 ,'',null);
+        this.handlerMessage('error', 511, '', null);
       }
 
     }
-    else{
+    else {
       console.log('else')
     }
   }
-  putFile(){
-    let fileName=this.user[0]+'-'+this.file.lastModified+'.'+this.file.name.split('.')[1];
-    console.log(fileName)
-    this.awsProvider.putTableConfig(this.user[0],this.file, this)
+
+  putFile() {
+    let fileName = this.user[0] + '-' + this.file.lastModified + '.' + this.file.name.split('.')[1];
+    //this.file='data:text/csv;base64'+this.file
+    this.awsProvider.postCashinFile(this.file, this)
   }
 
 

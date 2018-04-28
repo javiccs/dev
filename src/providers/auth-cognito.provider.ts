@@ -1,9 +1,6 @@
 import {Injectable} from '@angular/core';
 import {CognitoUtil} from './cognito-util.provider';
-import {userPoolId} from './properties.provider';
-import {clientId} from './properties.provider';
-import {region} from './properties.provider';
-import {identityPoolId} from './properties.provider';
+import {USER_POOL_ID,REGION,IDENTITY_POOL_ID,USER_POOL_URL,CLIENT_ID} from './properties.provider';
 import 'rxjs/add/operator/map';
 import {Http, Headers, Response, RequestOptions} from '@angular/http';
 
@@ -48,13 +45,8 @@ export interface LoggedInCallback {
 export interface GetUserCallback {
   getUserCallback(message: string, loggedIn: boolean): void;
 }
-
-export interface GetBalanceCallback {
-  getBalanceCallback(message: string, loggedIn: boolean): void;
-}
-
-export interface GetAppSettingsCallback {
-  getAppSettingsCallback(message: string, result: any): void;
+export interface PostCashinFileCallback {
+  postCashinFileCallback(message: string, esult: any): void;
 }
 
 @Injectable()
@@ -68,12 +60,12 @@ export class AuthCognitoProvider {
 
   awsInit() {
 
-    AWSCognito.config.region = region; //This is required to derive the endpoint
+    AWSCognito.config.region = REGION; //This is required to derive the endpoint
 
 
     let poolData = {
-      UserPoolId: userPoolId, // Your user pool id here
-      ClientId: clientId // Your client id here
+      UserPoolId: USER_POOL_ID, // Your user pool id here
+      ClientId: CLIENT_ID // Your client id here
     };
 
     this.userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(poolData);
@@ -199,7 +191,7 @@ export class AuthCognitoProvider {
         //console.log('access token + ' + JSON.stringify(result.idToken.jwtToken));
 
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-          IdentityPoolId: identityPoolId,
+          IdentityPoolId: IDENTITY_POOL_ID,
 
           Logins: {
 
@@ -317,7 +309,7 @@ export class AuthCognitoProvider {
         }
 
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-          IdentityPoolId: identityPoolId,
+          IdentityPoolId: IDENTITY_POOL_ID,
           Logins: {
 
             userIdentityUrl: session.getIdToken().getJwtToken()
@@ -350,7 +342,7 @@ export class AuthCognitoProvider {
 
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 
-          IdentityPoolId: identityPoolId,
+          IdentityPoolId: IDENTITY_POOL_ID,
           Logins: {
 
             userPoolUrl: session.getIdToken().getJwtToken()
@@ -377,12 +369,12 @@ export class AuthCognitoProvider {
     if (cognitoUser != null) {
       cognitoUser.getSession(function (err, result) {
         if (result) {
-          AWS.config.region = region; //This is required to derive the endpoint
+          AWS.config.region = REGION; //This is required to derive the endpoint
           // Add the User's Id Token to the Cognito credentials login map.
           AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId,
+            IdentityPoolId: IDENTITY_POOL_ID,
             Logins: {
-              'cognito-idp.us-east-1.amazonaws.com/us-east-1_RKwmlK3nr': result.getIdToken().getJwtToken()
+              USER_POOL_URL: result.getIdToken().getJwtToken()
             }
           });
         }
@@ -390,35 +382,35 @@ export class AuthCognitoProvider {
     }
 //call refresh method in order to authenticate user and get new temp credentials
 
-        var s3 = new AWS.S3()
-        var params = {
-          Bucket: "cw-apps-merchant-config",
-          Key: user + "/config.txt"
-        };
+    var s3 = new AWS.S3()
+    var params = {
+      Bucket: "cw-apps-merchant-config",
+      Key: user + "/config.txt"
+    };
 
-        s3.getObject(params, function (err, data) {
-          if (err) {
-            callback.cognitoCallback(err.message, null);
-          } else {
-            callback.cognitoCallback(null, data);
+    s3.getObject(params, function (err, data) {
+      if (err) {
+        callback.cognitoCallback(err.message, null);
+      } else {
+        callback.cognitoCallback(null, data);
 
-          }
-        });
-
+      }
+    });
 
 
   }
-  putTableConfig(user:string,file: any, callback: UploadFileCallback) {
+
+  putTableConfig(user: string, file: any, callback: UploadFileCallback) {
     var cognitoUser = this.userPool.getCurrentUser();
     if (cognitoUser != null) {
       cognitoUser.getSession(function (err, result) {
         if (result) {
-          AWS.config.region = region; //This is required to derive the endpoint
+          AWS.config.region = REGION; //This is required to derive the endpoint
           // Add the User's Id Token to the Cognito credentials login map.
           AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId,
+            IdentityPoolId: IDENTITY_POOL_ID,
             Logins: {
-              'cognito-idp.us-east-1.amazonaws.com/us-east-1_T9AVy9m1P': result.getIdToken().getJwtToken()
+              USER_POOL_URL: result.getIdToken().getJwtToken()
             }
           });
         }
@@ -432,23 +424,61 @@ export class AuthCognitoProvider {
       Bucket: "parkingsharedstack-cwcashindocumentsbucket-wpfrgy0wok9u",
       ContentType: file.type,
       ACL: 'public-read',
-      Key: user+'/'+file.name+file.lastModified
+      Key: user + '/' + file.name + file.lastModified
     };
 
     s3.putObject(params, function (err, data) {
       if (err) {
         callback.uploadFileCallback(err.message, null);
       } else {
-       callback.uploadFileCallback(null, data);
+        callback.uploadFileCallback(null, data);
 
       }
     });
 
 
-
   }
 
+  postCashinFile(data: any, callback: PostCashinFileCallback): any {
+    var cognitoUser = this.userPool.getCurrentUser();
+    if (cognitoUser != null) {
+      cognitoUser.getSession(function (err, session) {
+        if (err) {
+          alert(err);
+          return;
+        }
+        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+          IdentityPoolId: IDENTITY_POOL_ID,
+          Logins: {
+            userPoolUrl: session.getIdToken().getJwtToken()
+          }
+        });
+        var apigClient = apigClientFactory.newClient();
+        jwtToken = session.getIdToken().getJwtToken();
+        //   console.log("Tokensssssss:" + jwtToken);
+        var params = {};
+        var body = {base64_data: data}
+
+        var additionalParams = {
+          //If there are any unmodeled query parameters or headers that need to be sent with the request you can add them here
+          headers: {
+            Authorization: jwtToken,
+            "Content-Type": "application/json"
+          }
+        };
+        apigClient.cashinPost(params, body, additionalParams)
+          .then(function (result) {
+            //console.log("SUCCESS: " + JSON.stringify(result.data))
+            callback.postCashinFileCallback(null, result);
+          }).catch(function (result) {
+          //   console.log("ERROR: " + result)
+          //console.log("FAil: " + JSON.stringify(result))
+          callback.postCashinFileCallback(result.response, null);
+        });
+      });
 
 
+    }
+  }
 }
 
