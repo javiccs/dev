@@ -5,6 +5,7 @@ import {Injectable} from '@angular/core';
 import {Http, ResponseContentType, Response, ResponseOptions} from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 import {AuthCognitoProvider, UploadFileCallback} from '../../providers/auth-cognito.provider';
+import {FormBuilder, FormGroup, Validators, FormControl, AbstractControl} from '@angular/forms';
 
 /**
  * Generated class for the HomePage page.
@@ -22,26 +23,36 @@ export class HomePage extends MainPage {
   requestURL: string;
   public items: any = [];
   public landingPage: boolean;
-  public userFileName = 'No se ha seleccionado ningun archivo'
+  public userFileName = ''
   public user: string;
   public disabled: boolean
-  public file: any;
+  public base64File: any
+  public form: FormGroup;
+  public userFileSize: any;
 
   constructor(public navCtrl: NavController,
               public loadingCtrl: LoadingController,
               public menu: MenuController,
               public http: Http,
+              public formBuilder: FormBuilder,
               public awsProvider: AuthCognitoProvider,
               public alertCtrl: AlertController,) {
 
     super(navCtrl, loadingCtrl, menu, alertCtrl);
     try {
+      this.form = formBuilder.group({
+        file: new FormControl(''),
+
+      })
       this.awsProvider.awsInit();
       this.awsProvider.getCognitoUser(this)
       this.landingPage = true;
       this.disabled = true;
+      this.userFileSize='';
+      this.userFileName='';
+
     } catch (e) {
-      console.log('entro' + 2)
+      console.log('catch constructor home' + e)
     }
   }
 
@@ -77,25 +88,13 @@ export class HomePage extends MainPage {
 
   }
 
-  postCashinFileCallback(message: any, result: any) {
-    if (message != null) { //error
-      //this.handlerMessage('error', 510 ,'',null);
-      this.handlerMessage('error', message.data.code, '.Linea '+message.data.line, null);
-      this.disabled = true;
-    } else { //success
-      this.userFileName = 'No se ha seleccionado ningun archivo'
-      this.disabled = true;
-      this.file=''
-      this.handlerMessage('success', 711, '', null);
-    }
-
-  }
 
   getSource(item) {
     if (item == 'cashIn') {
       this.landingPage = true;
       this.disabled = true;
-      this.userFileName = 'No se ha seleccionado ningun archivo'
+      this.userFileName = ''
+      this.userFileSize='';
 
     } else {
       this.landingPage = false;
@@ -108,35 +107,72 @@ export class HomePage extends MainPage {
 
   }
 
-  getFile(event) {
-    let fileList: FileList = event.target.files;
 
-    if (fileList.length > 0) {
-      this.file = fileList[0];
-      let extension: any = this.file.name.split('.')
-      if (extension[1] == 'csv') {
-        this.userFileName = this.file.name;
-        this.disabled = false;
-      }
-      else {
-        this.file = '';
-        this.userFileName = 'No se ha seleccionado ningun archivo'
-        this.disabled = true;
-        this.handlerMessage('error', 511, '', null);
+  getFile(evt) {
+    try {
+      var files = evt.target.files;
+      var file = files[0];
+      if (files.length > 0) {
+        let extension: any = file.name.split('.')
+        if (extension[1] == 'csv') {
+          if (files && file) {
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+              this.base64File = reader.result.split(',')[1]
+            };
+            this.userFileName = file.name;
+            this.userFileSize=file.size;
+            this.disabled = false;
+          }
+        }
+        else {
+          this.base64File = '';
+          this.userFileName = ''
+          this.userFileSize='';
+          this.disabled = true;
+          this.handlerMessage('error', 511, '', null);
+        }
+
       }
 
-    }
-    else {
-      console.log('else')
+    } catch (e) {
+      console.log('catch getFile ' + e)
     }
   }
 
-  putFile() {
-    let fileName = this.user[0] + '-' + this.file.lastModified + '.' + this.file.name.split('.')[1];
-    //this.file='data:text/csv;base64'+this.file
-    this.awsProvider.postCashinFile(this.file, this)
+
+  postCashinFile() {
+    try {
+      this.presentLoading('Cargando archivo')
+      this.loading.present();
+      this.awsProvider.postCashinFile(this.base64File, this)
+    } catch (e) {
+      console.log('catch postCashinFile ' + e)
+    }
   }
 
+  postCashinFileCallback(message: any, result: any) {
+    try {
+      console.log('message ' + JSON.stringify(message) + ' result ' + result)
+      this.loading.dismiss();
+      this.base64File = ''
+      this.disabled = true;
+      this.userFileName = ''
+      this.userFileSize = '';
+      if (message != null) { //error
+        //this.handlerMessage('error', message.code, '.Linea ' + message.data.line, null);
+        this.handlerMessage('error', message.code, '.Linea ' + '', null);
+      } else { //success
+
+        this.handlerMessage('success', 711, '', null);
+      }
+    }catch (e) {
+
+      console.log('catch postCashinFileCallback ' + e)
+    }
+
+  }
 
   getUserCallback(message: any, result: any) {
     let email: any;

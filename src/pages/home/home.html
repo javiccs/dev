@@ -34,30 +34,40 @@
         <ion-item no-lines>
           <ion-item-group>
             <ion-grid>
-              <ion-row padding-bottom>
-                <ion-col col-12 class="center-text sub-title">Recargas</ion-col>
-              </ion-row>
-              <ion-row padding-top>
-                <ion-col class="center-text" col-12 padding-left>Por favor selecciona el archivo a enviar, recuerde que debe estar en formato csv.</ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col class="center-text" col-12 padding-left>selecciona el archivo
-                <label for="file-upload" class="custom-file-upload">
-                  <i class="fa fa-cloud-upload"></i> oprimiendo aqui
-                </label>
-                <input (change)="getFile($event)" id="file-upload" name='upload_cont_img' type="file" style="display:none;">
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col class="center-text" col-12 padding-left>{{userFileName}}.</ion-col>
-              </ion-row>
-              <ion-item padding-bottom no-lines>
-                <button ion-button class="btnCenter hover-button" ion-text="cw-lg-green"
-                        [disabled]="disabled"
-                        (click)="putFile()"
-                        round>Cargar
-                </button>
-              </ion-item>
+              <form name="form">
+                <ion-row padding-bottom>
+                  <ion-col col-12 class="center-text sub-title">Recargas</ion-col>
+                </ion-row>
+                <ion-row padding-top>
+                  <ion-col class="center-text" col-12 padding-left>Por favor selecciona el archivo a enviar, recuerde
+                    que
+                    debe estar en formato csv.
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+
+                  <ion-col class="center-text" col-12 padding-left>selecciona el archivo
+                    <label for="file-upload" class="custom-file-upload">
+                      <i class="fa fa-cloud-upload"></i> oprimiendo aqui
+                    </label>
+
+                    <input (change)="getFile($event)" accept=".csv" id="file-upload" name='upload_cont_img' type="file"
+                           style="display:none;">
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col *ngIf="userFileName==''" class="center-text" col-12 padding-left>No se ha seleccionado ningún archivo.</ion-col>
+                  <ion-col *ngIf="userFileName!=''" class="center-text" col-12 padding-left>Nombre del archivo: {{userFileName}}.</ion-col>
+                  <ion-col *ngIf="userFileSize!=''" class="center-text" col-12 padding-left>Tamaño del archivo: {{userFileSize/ 1000}} Kb.</ion-col>
+                </ion-row>
+                <ion-item padding-bottom no-lines>
+                  <button ion-button class="btnCenter hover-button" ion-text="cw-lg-green"
+                          [disabled]="disabled"
+                          (click)="postCashinFile()"
+                          round>Cargar
+                  </button>
+                </ion-item>
+              </form>
             </ion-grid>
           </ion-item-group>
         </ion-item>

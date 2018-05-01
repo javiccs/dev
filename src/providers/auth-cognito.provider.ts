@@ -473,7 +473,7 @@ export class AuthCognitoProvider {
           }).catch(function (result) {
           //   console.log("ERROR: " + result)
           //console.log("FAil: " + JSON.stringify(result))
-          callback.postCashinFileCallback(result.response, null);
+          callback.postCashinFileCallback(result.data, null);
         });
       });
 
