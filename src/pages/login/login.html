@@ -16,7 +16,7 @@
     <ion-item-group padding>
       <form [formGroup]="loginForm" (ngSubmit)="doLogin(loginForm.value)" novalidate>
         <ion-item>
-          <ion-label autocapitalize="none" floating>Usuario o correo electrónico</ion-label>
+          <ion-label autocapitalize="none" floating>Usuario</ion-label>
           <ion-input type="email" [formControl]="loginForm.controls['email']" required></ion-input>
         </ion-item>
         <ion-item no-lines *ngIf="email.dirty && !email.valid" class="alert alert-danger">
